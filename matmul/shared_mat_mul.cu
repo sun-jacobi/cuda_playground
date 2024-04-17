@@ -43,7 +43,7 @@ matMulKernel(float *A, float *B, float *C)
 void 
 matMul(float *A, float *B, float *C) 
 {   
-    printf("Matrix Addition Kernel\n");  
+    printf("Matrix Multiplication Kernel (Shared Memory)\n");  
     //============================
     size_t SIZEA = N * M * sizeof(float);
     size_t SIZEB = M * L * sizeof(float); 
