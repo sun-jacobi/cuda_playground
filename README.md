@@ -1,4 +1,4 @@
-# Learning CUDA programming
+# Learning CUDA programming By example
 
 ## Kernels
 1. Vector addition
