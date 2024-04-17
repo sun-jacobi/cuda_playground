@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cuda_runtime.h>
 
+// Naive version of matrix multiplication
 
 constexpr size_t N = 256; 
 constexpr size_t M = 256;
@@ -11,10 +12,11 @@ constexpr size_t L = 256;
 __global__ void 
 matMulKernel(float *A, float *B, float *C) 
 {
-    int i = threadIdx.x + blockDim.x * blockIdx.x; // col
-    int j = threadIdx.y + blockDim.y * blockIdx.y; // row
+    int i = threadIdx.x + blockDim.x * blockIdx.x;
+    int j = threadIdx.y + blockDim.y * blockIdx.y;
 
-    if (i < N || j < L) {
+    if (i < N || j < L) 
+    {
         float sum = 0;
         for (size_t k = 0; k < M; k++) 
             sum += A[i * M + k] * B[k * L + j];
@@ -28,24 +30,24 @@ matMul(float *A, float *B, float *C)
 {   
     printf("Matrix Addition Kernel\n");  
     //============================
-    size_t ASize = N * M * sizeof(float);
-    size_t BSize = M * L * sizeof(float); 
-    size_t CSize = N * L * sizeof(float); 
+    size_t SIZEA = N * M * sizeof(float);
+    size_t SIZEB = M * L * sizeof(float); 
+    size_t SIZEC = N * L * sizeof(float); 
     float *DA, *DB, *DC;
     
-    cudaMalloc(&DA, ASize);
-    cudaMalloc(&DB, BSize);
-    cudaMalloc(&DC, CSize);
+    cudaMalloc(&DA, SIZEA);
+    cudaMalloc(&DB, SIZEB);
+    cudaMalloc(&DC, SIZEC);
     
-    cudaMemcpy(DA, A, ASize, cudaMemcpyHostToDevice);
-    cudaMemcpy(DB, B, BSize, cudaMemcpyHostToDevice);
+    cudaMemcpy(DA, A, SIZEA, cudaMemcpyHostToDevice);
+    cudaMemcpy(DB, B, SIZEB, cudaMemcpyHostToDevice);
     
     //============================
     dim3 dimBlock(16, 16);
     dim3 dimGrid(N / dimBlock.x, L / dimBlock.y);
     matMulKernel<<<dimGrid, dimBlock>>>(DA, DB, DC);
     cudaDeviceSynchronize();
-    cudaMemcpy(C, DC, CSize, cudaMemcpyDeviceToHost);
+    cudaMemcpy(C, DC, SIZEC, cudaMemcpyDeviceToHost);
     //===============
     cudaFree(DA); 
     cudaFree(DB);
